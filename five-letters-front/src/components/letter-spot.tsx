@@ -1,4 +1,4 @@
-import { RefObject, forwardRef, useEffect, useState } from "react"
+import { RefObject, forwardRef, useState } from "react"
 
 interface LetterSpotProps {
     index?: Number,
@@ -9,6 +9,7 @@ interface LetterSpotProps {
 
 type Ref = HTMLInputElement;
 export const LetterSpot = forwardRef<Ref, LetterSpotProps>((props, ref) => {
+    
     const [value, setValue] = useState(props.value);
     const onKeyDown = (e: any) => {
         if (e.keyCode >= 65 && e.keyCode <= 90) {
@@ -18,7 +19,11 @@ export const LetterSpot = forwardRef<Ref, LetterSpotProps>((props, ref) => {
         }
 
         if (e.keyCode === 8 || e.keyCode === 46)
-            setValue('')
+            setValue('');
+
+        if (e.keyCode === 13) {
+            props.onKeyDown({ isEnter: true });
+        }
     }
 
     return <input
