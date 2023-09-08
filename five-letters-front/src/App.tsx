@@ -1,18 +1,15 @@
 import './App.css';
-import WordSpot from './components/word-spot';
+import Game from './components/game';
 
 function App() {
-  const word = 'Beijo';
+  const word = 'Amada';
   return (
     <div className="App">
       <header className="App-header">
         <p>
           FIVE LETTERS
         </p>
-        <WordSpot word={word}/>        
-        <WordSpot word={word}/>        
-        <WordSpot word={word}/>        
-        <WordSpot word={word}/>        
+        <Game />      
       </header>
     </div>
   );

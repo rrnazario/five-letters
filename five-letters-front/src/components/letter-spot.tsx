@@ -9,7 +9,7 @@ interface LetterSpotProps {
 
 type Ref = HTMLInputElement;
 export const LetterSpot = forwardRef<Ref, LetterSpotProps>((props, ref) => {
-    
+
     const [value, setValue] = useState(props.value);
     const onKeyDown = (e: any) => {
         if (e.keyCode >= 65 && e.keyCode <= 90) {
@@ -18,8 +18,10 @@ export const LetterSpot = forwardRef<Ref, LetterSpotProps>((props, ref) => {
             props.onKeyDown({ index: props.index, value: nextValue });
         }
 
-        if (e.keyCode === 8 || e.keyCode === 46)
-            setValue('');
+        if (e.keyCode === 8 || e.keyCode === 46) {
+            setValue('');            
+            props.onKeyDown({ isClean: true, index: props.index });
+        }
 
         if (e.keyCode === 13) {
             props.onKeyDown({ isEnter: true });
