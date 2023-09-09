@@ -6,6 +6,7 @@ import Button from "./button";
 export default function Game() {
     const [gameStarted, setGameStarted] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [showAttempts, setShowAttempts] = useState(false);
     const [currentWord, setCurrentWord] = useState('');
     const [words, setWords] = useState<string[]>([]);
     const [attempts, setAttempts] = useState<string[]>([]);
@@ -23,19 +24,33 @@ export default function Game() {
         await setCurrentWord('');
         await setAttempts([]);
 
-        //Pick word
-        const wordsFetch = await fetch(raw);
-        const wordsParsed = await wordsFetch.text();
-        const localWords = wordsParsed
-            .split('\n')
-            .filter(w => w.split('').length === 5)
-            .map(w => w.toUpperCase());
-
-        await setWords(localWords);
-        const nextIndex = Math.floor(Math.random() * (0 - localWords.length) + localWords.length);
-        await setCurrentWord(localWords[nextIndex]);
+        await setCurrentWord(await pickWord());
 
         await setGameStarted(true);
+
+        //blink to re-render
+        await setShowAttempts(false);
+        await setShowAttempts(true);
+    }
+
+    const pickWord = async (): Promise<string> => {
+        let localWords: string[] = [];
+        if (words.length === 0) {
+            const wordsFetch = await fetch(raw);
+            const wordsParsed = await wordsFetch.text();
+            localWords = wordsParsed
+                .split('\n')
+                .filter(w => w.split('').length === 5)
+                .map(w => w.toUpperCase());
+
+            await setWords(localWords);
+        }
+        else {
+            localWords = [...words]
+        }
+
+        const nextIndex = Math.floor(Math.random() * (0 - localWords.length) + localWords.length);
+        return localWords[nextIndex];
     }
 
     const quitGame = async () => {
@@ -44,17 +59,15 @@ export default function Game() {
     }
 
     const onAttempt = async (word: string) => {
-        if (attempts.indexOf(word) === -1) {
-            const local = [...attempts, word];
-            await setAttempts(local);
-        }
+        const local = [...attempts, word];
+        await setAttempts(local);
     }
 
     return <>
         {!gameStarted && <Button onClick={startGame} caption="Jogar" />}
         {gameStarted && <Button onClick={quitGame} caption="Desistir" />}
         {showAnswer && <div>{`A palavra era ${currentWord}`}</div>}
-        {gameStarted && <div>
+        {showAttempts && <div>
             {Array.from(Array(ATTEMPTS_MAX).keys())
                 .map(i => <WordSpot
                     word={currentWord}
