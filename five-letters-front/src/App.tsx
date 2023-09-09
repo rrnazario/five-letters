@@ -7,7 +7,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <p>
-          FIVE LETTERS
+          CINCO LETRAS
         </p>
         <Game />      
       </header>

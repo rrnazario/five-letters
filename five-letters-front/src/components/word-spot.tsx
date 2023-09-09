@@ -9,8 +9,9 @@ interface WordSpotProps {
 
 export default function WordSpot(props: WordSpotProps) {
     const size = 5;
-    const references = Array.from(Array(size).keys()).map(i => createRef<HTMLInputElement>());
+    const references = Array.from(Array(size).keys()).map(_ => createRef<HTMLInputElement>());
     const [currentValues, setCurrentValues] = useState<string>('');
+    const [readOnly, setReadOnly] = useState(false);
 
     useEffect(() => {
         setCurrentValues(Array.from(Array(size).keys()).map(i => ' ').reduce((previous, current) => previous += current));
@@ -18,7 +19,7 @@ export default function WordSpot(props: WordSpotProps) {
 
     const onKeyDown = async (kdProp: any) => {
         if (kdProp.isEnter) {
-            verifyAnswer();
+            await verifyAnswer();
             return;
         }
 
@@ -40,7 +41,7 @@ export default function WordSpot(props: WordSpotProps) {
         }
     }
 
-    const verifyAnswer = () => {
+    const verifyAnswer = async () => {
         if (!isValid()) {
             alert('Palavra inválida');
             return;
@@ -58,6 +59,7 @@ export default function WordSpot(props: WordSpotProps) {
         extractCloseMatches(wordChars, currentValuesChars);
 
         props.onAttempt(currentValues);
+        await setReadOnly(true);
     }
 
     const clearColors = () => {
@@ -131,13 +133,14 @@ export default function WordSpot(props: WordSpotProps) {
 
     return <div style={{
         display: 'flex',
-        padding: '30px'
+        padding: '10px'
     }}>
         {Array.from(Array(5).keys()).map((_, index) => {
             return <LetterSpot
                 key={index}
                 index={index}
                 ref={references[index]}
+                isReadOnly={readOnly}
                 value={''}
                 onKeyDown={onKeyDown}
             />

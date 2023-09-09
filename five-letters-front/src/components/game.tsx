@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WordSpot from "./word-spot";
 import raw from '../constants/dict.txt';
 import Button from "./button";
@@ -9,6 +9,13 @@ export default function Game() {
     const [currentWord, setCurrentWord] = useState('');
     const [words, setWords] = useState<string[]>([]);
     const [attempts, setAttempts] = useState<string[]>([]);
+
+    const ATTEMPTS_MAX = 5;
+
+    useEffect(() => {
+        if (attempts.length === 5)
+            quitGame();
+    }, [attempts]);
 
     const startGame = async () => {
 
@@ -47,23 +54,14 @@ export default function Game() {
         {!gameStarted && <Button onClick={startGame} caption="Jogar" />}
         {gameStarted && <Button onClick={quitGame} caption="Desistir" />}
         {showAnswer && <div>{`A palavra era ${currentWord}`}</div>}
-        {gameStarted && <>
-            <WordSpot
-                word={currentWord}
-                dict={words}
-                onAttempt={onAttempt}
-            />
-            <textarea
-                cols={25}
-                rows={10}
-                readOnly
-                style={{
-                    fontStyle: 'bold',
-                    fontSize: '18px',
-                    textAlign: 'center'
-                }}
-                value={attempts.join("\n")} />
-        </>}
+        {gameStarted && <div>
+            {Array.from(Array(ATTEMPTS_MAX).keys())
+                .map(i => <WordSpot
+                    word={currentWord}
+                    dict={words}
+                    onAttempt={onAttempt}
+                />)}
+        </div>}
 
     </>
 }
